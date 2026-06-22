@@ -118,6 +118,7 @@ if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true) {
                     sessionStorage.setItem('isLoggedIn', 'true');
                     sessionStorage.setItem('currentUser', data.username);
                     sessionStorage.setItem('currentRole', data.role);
+                    sessionStorage.setItem('currentNama', data.nama); // Menyimpan nama asli di client-side storage
                     
                     alert('Login Berhasil! Selamat datang ' + data.nama + '.');
                     window.location.href = 'index.php';
@@ -130,7 +131,7 @@ if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true) {
             })
             .catch(err => {
                 console.error(err);
-                alertText.innerText = "Gagal terhubung ke database. Periksa kembali config/db.php Anda.";
+                alertText.innerText = "Gagal terhubung ke database. Periksa kembali config/db.php atau server XAMPP Anda.";
                 alertDiv.classList.remove('hidden');
                 btnText.innerText = "LOGIN";
                 btnLogin.disabled = false;

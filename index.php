@@ -4,11 +4,30 @@
  * Warrior Computer - Main Dashboard Engine
  * File: index.php
  * Deskripsi: Orchestrator utama yang menyatukan seluruh komponen layout,
- * halaman kerja (pages), dan modal asinkronus.
+ * halaman kerja (pages), dan modal asinkronus dengan proteksi SPA aman.
  */
 
 // Proteksi session dan koneksi DB dipindah ke includes/head.php
 include_once 'includes/head.php'; 
+
+/**
+ * ============================================================================
+ * ENGINE STANDARDISASI ROLE & AKOMODASI MULTI-ROLE (FIX AKSES DITOLAK)
+ * ============================================================================
+ * Menjamin akun dengan string 'Administrator' ataupun 'front_admin' memiliki 
+ * tingkat otoritas yang setara di mata sistem layout utama index.
+ */
+// 1. Ambil data role aktif dari session jika variabel penentu belum terbentuk
+if (!isset($currentRole)) {
+    $currentRole = isset($_SESSION['role']) ? $_SESSION['role'] : '';
+}
+
+// 2. Lakukan standarisasi string penamaan role admin
+$isAdmin = ($currentRole === 'front_admin' || $currentRole === 'Administrator' || $currentRole === 'admin_depan');
+$isDirektur = ($currentRole === 'direktur');
+
+// 3. Set ulang flag teknisi agar tidak terjadi salah blokir halaman input & verifikasi
+$isTeknisi = ($currentRole === 'teknisi');
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -26,34 +45,44 @@ include_once 'includes/head.php';
 
         <main class="p-4 lg:p-6 overflow-y-auto flex-grow h-[calc(100vh-64px)] custom-scroll">
             <?php 
-            // 1. Halaman Input Data Servis Baru (Hanya untuk Admin & Direktur)
-            if (!$isTeknisi) { 
+            /**
+             * ULTRA SAFE SPA ROUTER (SINKRONISASI AKTIF & AMAN):
+             * Jika user memiliki hak akses, panggil file halaman asli.
+             * Jika user ditolak (Teknisi), render DIV kosong tanpa peringatan teks/notifikasi merah.
+             * Strategi ini mencegah JavaScript crash sekaligus melenyapkan pemberitahuan "Akses Terbatas".
+             */
+
+            // 1. Halaman Input Data Servis Baru
+            if ($isAdmin || $isDirektur) { 
                 include_once 'pages/input.php'; 
             } else { 
-                echo '<div id="page-input" class="page-content hidden"><div class="p-6 bg-red-50 text-red-600 font-bold rounded-xl border border-red-200 text-xs uppercase tracking-wider">AKSES DITOLAK! HALAMAN INI DIKUNCI KHUSUS ADMINISTRATOR SISTEM.</div></div>'; 
+                // Diubah menjadi div kosong tersembunyi agar pesan error hilang total dari pandangan teknisi
+                echo '<div id="page-input" class="page-content hidden"></div>'; 
             }
             
-            // 2. Halaman Monitoring Proses & Pekerjaan (Terbuka untuk Semua Role)
+            // 2. Halaman Monitoring Proses & Pekerjaan (Terbuka untuk Semua Karyawan - Real-time)
             include_once 'pages/monitor.php';
             
-            // 3. Halaman Lembar Verifikasi Selesai & Kasir (Hanya untuk Admin & Direktur)
-            if (!$isTeknisi) { 
+            // 3. Halaman Lembar Verifikasi Selesai & Kasir
+            if ($isAdmin || $isDirektur) { 
                 include_once 'pages/verifikasi.php'; 
             } else { 
-                echo '<div id="page-verifikasi" class="page-content hidden"><div class="p-6 bg-red-50 text-red-600 font-bold rounded-xl border border-red-200 text-xs uppercase tracking-wider">AKSES DITOLAK! HALAMAN VERIFIKASI FINANSIAL DIKUNCI.</div></div>'; 
+                // Diubah menjadi div kosong tersembunyi untuk mencegah distorsi UI
+                echo '<div id="page-verifikasi" class="page-content hidden"></div>'; 
             }
             
-            // 4. Halaman Laporan Keuangan & Laba Komisi 
+            // 4. Halaman Laporan Keuangan & Laba Komisi (Direktur & Hak Khusus Teknisi)
             include_once 'pages/keuangan.php';
             
-            // 5. UPDATE BARU: Halaman Arsip Riwayat Laporan Transaksi Lunas Pelunasan
+            // 5. Halaman Arsip Riwayat Laporan Transaksi Lunas Pelunasan
             include_once 'pages/laporan.php';
             
-            // 6. Halaman Manajemen Pengguna Sistem (Hanya Spesifik Hak Akses front_admin)
-            if ($currentRole === 'front_admin') { 
+            // 6. Halaman Manajemen Pengguna Sistem
+            if ($isAdmin || $isDirektur) { 
                 include_once 'pages/pengguna.php'; 
             } else { 
-                echo '<div id="page-pengguna" class="page-content hidden"><div class="p-6 bg-red-50 text-red-600 font-bold rounded-xl border border-red-200 text-xs uppercase tracking-wider">AKSES DITOLAK! MANAJEMEN PENGGUNA HANYA UNTUK UTAMA ADMINISTRATOR.</div></div>'; 
+                // Diubah menjadi div kosong tersembunyi demi keamanan data user
+                echo '<div id="page-pengguna" class="page-content hidden"></div>'; 
             }
             ?> 
         </main>
