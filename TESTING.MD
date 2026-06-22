@@ -1,13 +1,13 @@
-# 🟡 Laporan Pengujian - Edge Case Test Case
+# 🟢 Laporan Pengujian - Positive Test Case
 **Aplikasi:** Monitoring Service Computer (Warrior Computer)  
-**Penguji:** Rasyid  
+**Penguji:** Alba
 
 ---
 
 | ID Test Case | Kategori | Skenario Pengujian | Test Data | Expected Result | Actual Result | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TCE-01** | EDGE CASE | Input nama dengan spasi berlebih | Nama: `   Jamaludin   ` | Sistem menerima proses simpan dan menormalisasi spasi | Nama tersimpan rapi sebagai "Jamaludin" di tabel | **PASS** |
-| **TCE-02** | EDGE CASE | Mencetak nota unit masuk tanpa rincian tindakan | Cetak unit yang status penangannya masih NULL | Nota tetap berhasil dicetak tanpa memicu error PHP | Area tindakan pada nota tampil kosong atau bergaris strip | **PASS** |
-| **TCE-03** | EDGE CASE | Menguji Logika Kekurangan Pembayaran di Kasir | Total: Rp 100.000<br>Input Tunai: Rp 10.000 | Label Kekurangan muncul merah "Kurang Rp 90.000". Tombol "Sahkan" dinonaktifkan. | Label kurang muncul merah, tombol Sahkan terkunci. | **PASS** |
-| **TCE-04** | EDGE CASE | Mengembalikan status progres laptop mundur | Mengubah status dari Pengerjaan kembali ke Cek / Antrean | Sistem berhasil mengubah kembali status tersebut di database tanpa mengunci alur kerja. | Status berhasil diturunkan kembali dan warna badge menyesuaikan secara otomatis. | **PASS** |
-| **TCE-05** | EDGE CASE | Menguji respon auto-filter saat pelunasan | Ubah status menjadi Lunas / Selesai | Data langsung difilter keluar dari view antrean aktif | Baris data hilang secara otomatis tanpa memuat ulang halaman | **PASS** |
+| **TCP-01** | POSITIVE | Login Dengan Data Valid | USR: `@front_admin`<br>PW: `depan123` | User Berhasil Masuk ke Dashboard Utama | Masuk ke Halaman Dashboard Utama | **PASS** |
+| **TCP-02** | POSITIVE | Menambahkan Data Pengguna Baru | Nama: Rasyid<br>Usr: `@rasyid`<br>Pw: `rasyid123`<br>Role: `Front_admin` | Data berhasil tersimpan dan langsung tampil di tabel antarmuka | Data muncul di tabel daftar pengguna | **PASS** |
+| **TCP-03** | POSITIVE | Mengubah Progres Tahapan Servis | Ubah status dari Cek / Antrean ke Pengerjaan | Status berhasil diperbarui di database secara real-time | Tampilan status berubah di baris tabel monitoring | **PASS** |
+| **TCP-04** | POSITIVE | Menambahkan Input Data Servis Baru | Nama: Alba<br>WA: `08123...`<br>Merk: Asus<br>Keluhan: Mati Total | Data servis baru berhasil masuk ke antrean tabel monitoring | Data masuk ke halaman Monitoring Proses | **PASS** |
+| **TCP-05** | POSITIVE | Mencetak Nota Transaksi Servis | Klik ikon detail → Klik tombol "Cetak" | Jendela Print Preview muncul dengan format nota yang lengkap | Print preview terbuka menampilkan PDF Nota | **PASS** |
